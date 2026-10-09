@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Order Assistant</title>
+<style>
+  body{margin:0;font-family:system-ui,sans-serif;background:#f4f5f7;display:flex;justify-content:center}
+  main{width:100%;max-width:720px;height:100vh;display:flex;flex-direction:column;background:#fff}
+  header{padding:14px 18px;border-bottom:1px solid #e3e5e8;font-weight:600}
+  #log{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:10px}
+  .msg{max-width:80%;padding:10px 14px;border-radius:14px;line-height:1.45;white-space:pre-wrap}
+  .user{align-self:flex-end;background:#1f4fd8;color:#fff}
+  .bot{align-self:flex-start;background:#eef0f3}
+  .err{align-self:flex-start;background:#fdecec;color:#a11;border:1px solid #f3b6b6}
+  .steps{font:12px ui-monospace,monospace;color:#555;margin-bottom:6px;white-space:pre-wrap;overflow-wrap:anywhere}
+  .loading{color:#777;font-style:italic}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 18px 10px}
+  .chips button{border:1px solid #cfd3d9;background:#fff;border-radius:14px;padding:5px 10px;font-size:12px;cursor:pointer}
+  form{display:flex;gap:8px;padding:12px 18px;border-top:1px solid #e3e5e8}
+  input{flex:1;padding:10px 12px;border:1px solid #cfd3d9;border-radius:10px;font-size:15px}
+  form button{padding:10px 18px;border:0;border-radius:10px;background:#1f4fd8;color:#fff;font-size:15px;cursor:pointer}
+  button:disabled{opacity:.5;cursor:not-allowed}
+</style>
+</head>
+<body>
+<main>
+  <header>Order Assistant</header>
+  <div id="log"><div class="msg bot">Hi! Ask me about orders, e.g. the status of an order, revenue by category, or top customers.</div></div>
+  <div class="chips">
+    <button>What is the status of order ORD-1025?</button>
+    <button>How many orders were cancelled?</button>
+    <button>Total revenue from Electronics in August?</button>
+    <button>Which customer has spent the most?</button>
+  </div>
+  <form id="f"><input id="q" maxlength="500" placeholder="Ask about orders..." autocomplete="off" required><button id="send">Send</button></form>
+</main>
+<script>
+const log = document.getElementById('log'), q = document.getElementById('q'), send = document.getElementById('send');
+let history = [];
+
+function add(cls, text) {
+  const d = document.createElement('div');
+  d.className = 'msg ' + cls; d.textContent = text;
+  log.appendChild(d); log.scrollTop = log.scrollHeight;
+  return d;
+}
+
+async function ask(text) {
+  text = text.trim();
+  if (!text || send.disabled) return;
+  add('user', text); q.value = ''; send.disabled = true;
+  const wait = add('bot loading', 'Thinking...');
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 60000);
+    const res = await fetch('/api/chat', {
+      method: 'POST', headers: {'Content-Type': 'application/json'}, signal: ctrl.signal,
+      body: JSON.stringify({message: text, history: history.slice(-8)})
+    });
+    clearTimeout(timer);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      const d = data.detail;
+      throw new Error(typeof d === 'string' ? d : 'Invalid input. Keep your message between 1 and 500 characters.');
+    }
+    wait.className = 'msg bot'; wait.textContent = '';
+    if (data.steps && data.steps.length) {
+      const s = document.createElement('div'); s.className = 'steps';
+      s.textContent = data.steps.map(x => (x.ok ? '✓ ' : '✗ ') + x.tool + '(' + JSON.stringify(x.args) + ')').join('\n');
+      wait.appendChild(s);
+    }
+    wait.appendChild(document.createTextNode(data.reply));
+    history.push({role: 'user', content: text}, {role: 'assistant', content: data.reply});
+  } catch (e) {
+    wait.className = 'msg err';
+    wait.textContent = e.name === 'AbortError' ? 'Request timed out. Please try again.'
+      : e instanceof TypeError ? 'Network error. Check your connection and try again.' : e.message;
+  } finally {
+    send.disabled = false; q.focus(); log.scrollTop = log.scrollHeight;
+  }
+}
+
+document.getElementById('f').addEventListener('submit', e => { e.preventDefault(); ask(q.value); });
+document.querySelectorAll('.chips button').forEach(b => b.addEventListener('click', () => ask(b.textContent)));
+</script>
+</body>
+</html>
