@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Order Assistant</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f766e'/%3E%3Ctext x='32' y='42' font-family='Arial,sans-serif' font-size='26' font-weight='700' text-anchor='middle' fill='white'%3EOA%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2314b8a6'/%3E%3Cstop offset='1' stop-color='%230f5f59'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='15' fill='url(%23g)'/%3E%3Cpath d='M16 16h32a5 5 0 0 1 5 5v19a5 5 0 0 1-5 5H31l-10 9v-9h-5a5 5 0 0 1-5-5V21a5 5 0 0 1 5-5z' fill='%23fff'/%3E%3Cpath d='M22 31l7 7 13-14' fill='none' stroke='%230f766e' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <style>
   :root{--bg:#f6f3ee;--panel:#fffdf9;--ink:#1d2433;--muted:#6b7280;--line:#e4ded3;--accent:#0f766e;--accent-ink:#fff;--bot:#f1ece3;--err-bg:#fdecec;--err:#a4161a;--chip:#dcefec;--ok:#16a34a;--pad:max(18px,calc((100% - 760px)/2))}
   @media (prefers-color-scheme:dark){:root{--bg:#12151b;--panel:#191d25;--ink:#e8e6e1;--muted:#9aa1ad;--line:#2a303b;--accent:#2dd4bf;--accent-ink:#06201d;--bot:#222833;--err-bg:#3a1c1e;--err:#ffb4b4;--chip:#1f3a38;--ok:#4ade80}}
@@ -88,7 +88,7 @@
   <main>
     <header>
       <button class="menu" id="menu" type="button" aria-label="Show chat history">☰</button>
-      <div class="logo">OA</div>
+      <img class="logo" alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2314b8a6'/%3E%3Cstop offset='1' stop-color='%230f5f59'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='15' fill='url(%23g)'/%3E%3Cpath d='M16 16h32a5 5 0 0 1 5 5v19a5 5 0 0 1-5 5H31l-10 9v-9h-5a5 5 0 0 1-5-5V21a5 5 0 0 1 5-5z' fill='%23fff'/%3E%3Cpath d='M22 31l7 7 13-14' fill='none' stroke='%230f766e' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
       <div class="title">
         <h1>Order Assistant</h1>
         <p><span class="dot" id="dot"></span><span id="status">Connecting...</span> · 60 orders · Jun to Sep 2026</p>
